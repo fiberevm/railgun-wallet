@@ -53,7 +53,6 @@ const getMockBalanceData = async (
         ),
         commitmentType: CommitmentType.ShieldCommitment,
         nullifier: ZERO_32_BYTE_VALUE,
-        poisPerList: undefined,
         blindedCommitment: undefined,
         transactCreationRailgunTxid: undefined,
       },

@@ -101,7 +101,7 @@ const receiveERC20AmountsReceive: RailgunHistoryReceiveERC20Amount[] = [
       '0zk1qyy0deg6tdmfum0dcxj8j69p9ue9emvyyuv46ltdrxcmfr06wafh8rv7j6fe3z53lalv6k0cvxsap0xqpcgjnplrkrz5nsykud3u5nstfclh96k4uwwcq8un6tm',
     shieldFee: '',
     hasValidPOIForActiveLists: true,
-    balanceBucket: RailgunWalletBalanceBucket.MissingExternalPOI,
+    balanceBucket: RailgunWalletBalanceBucket.Spendable,
   },
 ];
 const MOCKED_TRANSFER_RECEIVE_TRX: TransactionHistoryItem = {
@@ -128,7 +128,7 @@ const receiveERC20AmountsShield: RailgunHistoryReceiveERC20Amount[] = [
     senderAddress: '',
     memoText: '',
     hasValidPOIForActiveLists: true,
-    balanceBucket: RailgunWalletBalanceBucket.ShieldPending,
+    balanceBucket: RailgunWalletBalanceBucket.Spendable,
   },
 ];
 const MOCKED_SHIELD_TRX: TransactionHistoryItem = {

@@ -9,6 +9,7 @@ import {
   isDefined,
   RailgunERC20Recipient,
   TXIDVersion,
+  PreTransactionPOIsPerTxidLeafPerList,
 } from '@railgun-community/shared-models';
 import { shouldSetOverallBatchMinGasPriceForNetwork } from '../../utils/gas-price';
 import { compareContractTransactionArrays } from '../../utils/utils';
@@ -22,7 +23,6 @@ import {
   compareERC20RecipientArrays,
 } from './tx-notes';
 import { ContractTransaction } from 'ethers';
-import { PreTransactionPOIsPerTxidLeafPerList } from '@railgun-community/engine';
 
 export type ProvedTransaction = {
   proofType: ProofType;

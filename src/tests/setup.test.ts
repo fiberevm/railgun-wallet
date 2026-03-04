@@ -13,22 +13,16 @@ import {
 import {
   MOCK_BALANCES_UPDATE_CALLBACK,
   MOCK_FALLBACK_PROVIDER_JSON_CONFIG_SEPOLIA,
-  MOCK_POI_PROOF_PROGRESS_CALLBACK_CALLBACK,
   TEST_WALLET_SOURCE,
 } from './mocks.test';
 import { ArtifactStore } from '../services/artifacts/artifact-store';
 import {
   setOnBalanceUpdateCallback,
-  setOnWalletPOIProofProgressCallback,
 } from '../services/railgun/wallets/balance-update';
-import { WalletPOI } from '../services/poi/wallet-poi';
-import { TestWalletPOIRequester } from './poi/test-wallet-poi-requester.test';
-import { TestWalletPOINodeInterface } from './poi/test-wallet-poi-node-interface.test';
 import {
-  GetLatestValidatedRailgunTxid,
   MerklerootValidator,
+  GetLatestValidatedRailgunTxid,
   SnarkJSGroth16,
-  TXOPOIListStatus,
 } from '@railgun-community/engine';
 import {
   getEngine,
@@ -59,10 +53,6 @@ before(async () => {
   await rmDirSafe(ENGINE_TEST_DB);
   await rmDirSafe('artifacts-v2.1');
   setupTests();
-});
-
-beforeEach(() => {
-  TestWalletPOINodeInterface.overridePOIsListStatus = TXOPOIListStatus.Missing;
 });
 
 const fileExists = (path: string): Promise<boolean> => {
@@ -104,29 +94,10 @@ export const clearAllMerkletreeScanStatus = () => {
 };
 
 export const initTestEngine = async (useNativeArtifacts = false) => {
-  // SETUP TEST WALLET POI REQUESTER
-  const testPOIRequester = new TestWalletPOIRequester();
-  const txidMerklerootValidator: MerklerootValidator = (
-    txidVersion,
-    chain,
-    tree,
-    index,
-    merkleroot,
-  ) =>
-    testPOIRequester.validateRailgunTxidMerkleroot(
-      txidVersion,
-      chain,
-      tree,
-      index,
-      merkleroot,
-    );
-  WalletPOI.getPOITxidMerklerootValidator = () => txidMerklerootValidator;
-  const getLatestValidatedRailgunTxid: GetLatestValidatedRailgunTxid = (
-    txidVersion,
-    chain,
-  ) => testPOIRequester.getLatestValidatedRailgunTxid(txidVersion, chain);
-  WalletPOI.getPOILatestValidatedRailgunTxid = () =>
-    getLatestValidatedRailgunTxid;
+  const txidMerklerootValidator: MerklerootValidator = () =>
+    Promise.resolve(true);
+  const getLatestValidatedRailgunTxid: GetLatestValidatedRailgunTxid = () =>
+    Promise.resolve({ txidIndex: undefined, merkleroot: undefined });
 
   // Set the environment variable "VERBOSE" to enable debug logs
   const shouldDebug = typeof process.env.VERBOSE !== 'undefined';
@@ -142,20 +113,14 @@ export const initTestEngine = async (useNativeArtifacts = false) => {
     testArtifactStore,
     useNativeArtifacts,
     false, // skipMerkletreeScans
-    undefined, // poiNodeURL
-    undefined, // customPOILists[]
+    txidMerklerootValidator,
+    getLatestValidatedRailgunTxid,
     false // verboseLogging
   );
-
-  const testPOINodeInterface = new TestWalletPOINodeInterface();
-  WalletPOI.init(testPOINodeInterface, []);
 
   getEngine().prover.setSnarkJSGroth16(groth16 as SnarkJSGroth16);
 
   setOnBalanceUpdateCallback(MOCK_BALANCES_UPDATE_CALLBACK);
-  setOnWalletPOIProofProgressCallback(
-    MOCK_POI_PROOF_PROGRESS_CALLBACK_CALLBACK,
-  );
 
   setOnUTXOMerkletreeScanCallback(utxoMerkletreeHistoryScanCallback);
   setOnTXIDMerkletreeScanCallback(txidMerkletreeHistoryScanCallback);

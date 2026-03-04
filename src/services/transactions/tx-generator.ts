@@ -7,7 +7,6 @@ import {
   getTokenDataNFT,
   ERC721_NOTE_VALUE,
   NFTTokenData,
-  PreTransactionPOIsPerTxidLeafPerList,
   RailgunVersionedSmartContracts,
   TransactionStructV2,
   TransactionStructV3,
@@ -37,7 +36,6 @@ import {
 import { assertNotBlockedAddress } from '../../utils/blocked-address';
 import { shouldSetOverallBatchMinGasPriceForNetwork } from '../../utils/gas-price';
 import { ContractTransaction } from 'ethers';
-import { POIRequired } from '../poi/poi-required';
 
 const DUMMY_AMOUNT = 0n;
 export const DUMMY_FROM_ADDRESS = '0x000000000000000000000000000000000000dEaD';
@@ -66,7 +64,6 @@ export const generateProofTransactions = async (
   originShieldTxidForSpendabilityOverride?: string,
 ): Promise<{
   provedTransactions: (TransactionStructV2 | TransactionStructV3)[];
-  preTransactionPOIsPerTxidLeafPerList: PreTransactionPOIsPerTxidLeafPerList;
 }> => {
   const railgunWallet = fullWalletForID(railgunWalletID);
 
@@ -235,7 +232,6 @@ const transactionsFromERC20Amounts = async (
   originShieldTxidForSpendabilityOverride?: string,
 ): Promise<{
   provedTransactions: (TransactionStructV2 | TransactionStructV3)[];
-  preTransactionPOIsPerTxidLeafPerList: PreTransactionPOIsPerTxidLeafPerList;
 }> => {
   const network = NETWORK_CONFIG[networkName];
   const { chain } = network;
@@ -298,10 +294,6 @@ const transactionsFromERC20Amounts = async (
     },
   );
 
-  const shouldGeneratePreTransactionPOIs =
-    !sendWithPublicWallet &&
-    (await POIRequired.isRequiredForNetwork(networkName));
-
   const txBatches = await generateAllProofs(
     transactionBatch,
     railgunWallet,
@@ -309,7 +301,6 @@ const transactionsFromERC20Amounts = async (
     encryptionKey,
     useDummyProof,
     progressCallback,
-    shouldGeneratePreTransactionPOIs,
     originShieldTxidForSpendabilityOverride,
   );
   return txBatches;
@@ -473,11 +464,9 @@ const generateAllProofs = async (
   encryptionKey: string,
   useDummyProof: boolean,
   progressCallback: GenerateTransactionsProgressCallback,
-  shouldGeneratePreTransactionPOIs: boolean,
   originShieldTxidForSpendabilityOverride?: string,
 ): Promise<{
   provedTransactions: (TransactionStructV2 | TransactionStructV3)[];
-  preTransactionPOIsPerTxidLeafPerList: PreTransactionPOIsPerTxidLeafPerList;
 }> => {
   const prover = getProver();
   if (useDummyProof) {
@@ -489,7 +478,6 @@ const generateAllProofs = async (
         encryptionKey,
         originShieldTxidForSpendabilityOverride,
       ),
-      preTransactionPOIsPerTxidLeafPerList: {},
     };
   }
   return transactionBatch.generateTransactions(
@@ -498,7 +486,7 @@ const generateAllProofs = async (
     txidVersion,
     encryptionKey,
     progressCallback,
-    shouldGeneratePreTransactionPOIs,
+    false, // shouldGeneratePreTransactionPOIs
     originShieldTxidForSpendabilityOverride,
   );
 };

@@ -20,7 +20,6 @@ import {
   isDefined,
 } from '@railgun-community/shared-models';
 import { loadProvider } from '../../core/load-provider';
-import { getTXIDMerkletreeForNetwork } from '../../core/merkletree';
 import { getTestTXIDVersion, isV2Test } from '../../../../tests/helper.test';
 import { getEngine } from '../../core/engine';
 
@@ -61,7 +60,6 @@ describe('balances-live', () => {
     );
     await Promise.all([
       pollUntilUTXOMerkletreeScanned(),
-      // Enable this when running on a network supporting PPOI:
       pollUntilTXIDMerkletreeScanned(),
     ]);
   });
@@ -70,7 +68,7 @@ describe('balances-live', () => {
     await closeTestEngine();
   });
 
-  it('[V2] Should run live balance fetch, transaction history scan, and POI status info scan', async function run() {
+  it('[V2] Should run live balance fetch and transaction history scan', async function run() {
     if (!isV2Test()) {
       this.skip();
       return;
@@ -93,29 +91,5 @@ describe('balances-live', () => {
       undefined,
     );
     expect(transactionHistory.length).to.be.greaterThanOrEqual(2);
-
-    const poiStatusReceived = await wallet.getTXOsReceivedPOIStatusInfo(
-      txidVersion,
-      chain,
-    );
-    expect(poiStatusReceived.length).to.be.greaterThanOrEqual(2);
-    expect(poiStatusReceived[0].strings.blindedCommitment).to.not.equal(
-      'Missing',
-    );
-
-    const txidMerkletree = getTXIDMerkletreeForNetwork(
-      txidVersion,
-      networkName,
-    );
-    expect(txidMerkletree.savedPOILaunchSnapshot).to.equal(true);
-
-    const poiStatusSpent = await wallet.getTXOsSpentPOIStatusInfo(
-      txidVersion,
-      chain,
-    );
-    expect(poiStatusSpent.length).to.be.greaterThanOrEqual(1);
-    expect(poiStatusSpent[0].strings.railgunTransactionInfo).to.not.equal(
-      'Not found',
-    );
   }).timeout(90_000);
 });

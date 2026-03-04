@@ -6,22 +6,18 @@ import {
   Chain,
   ChainType,
   getTokenDataERC20,
-  POIProofEventStatus,
 } from '@railgun-community/engine';
 import Sinon, { SinonStub } from 'sinon';
 import {
   NETWORK_CONFIG,
   NetworkName,
-  POIProofProgressEvent,
   RailgunBalancesEvent,
   RailgunWalletBalanceBucket,
   isDefined,
 } from '@railgun-community/shared-models';
 import {
   onBalancesUpdate,
-  onWalletPOIProofProgress,
   setOnBalanceUpdateCallback,
-  setOnWalletPOIProofProgressCallback,
 } from '../balance-update';
 import { createRailgunWallet, fullWalletForID } from '../wallets';
 import {
@@ -123,9 +119,6 @@ describe('balances-update', () => {
     setOnBalanceUpdateCallback(callback);
     const chain: Chain = { type: ChainType.EVM, id: 80001 };
     await expect(onBalancesUpdate(txidVersion, wallet, chain)).to.be.fulfilled;
-    // TODO: enable this assertion once we have PPOI on PolygonMumbai
-    // because `onBalancesUpdate` only runs it if PPOI is required:
-    // expect(walletBalancesByBucketStub.calledOnce).to.be.true;
     expect(formattedBalances.balanceBucket).to.deep.equal(
       RailgunWalletBalanceBucket.Spendable,
     );
@@ -135,44 +128,5 @@ describe('balances-update', () => {
       tokenAddress: '0x0000000000000000000000000000000000012536',
       amount: 10n,
     });
-  });
-
-  it('Should parse poi proof progress response', async () => {
-    let proofProgress!: POIProofProgressEvent;
-    const callback = (proofProgressEvent: POIProofProgressEvent) => {
-      proofProgress = proofProgressEvent;
-    };
-    setOnWalletPOIProofProgressCallback(callback);
-    const chain: Chain = { type: ChainType.EVM, id: 69 };
-    const status = POIProofEventStatus.InProgress;
-    const progress = 5;
-    const listKey = 'listKey';
-    const txid = 'txid';
-    const railgunTxid = 'railgunTxid';
-    const index = 2;
-    const totalCount = 10;
-    onWalletPOIProofProgress(
-      status,
-      txidVersion,
-      wallet,
-      chain,
-      progress,
-      listKey,
-      txid,
-      railgunTxid,
-      index,
-      totalCount,
-      undefined, // errMessage
-    );
-    expect(proofProgress.chain).to.deep.equal(chain);
-    expect(proofProgress.railgunWalletID).to.equal(wallet.id);
-    expect(proofProgress.progress).to.equal(progress);
-    expect(proofProgress.listKey).to.equal(listKey);
-    expect(proofProgress.txid).to.equal(txid);
-    expect(proofProgress.railgunTxid).to.equal(railgunTxid);
-    expect(proofProgress.index).to.equal(index);
-    expect(proofProgress.totalCount).to.equal(totalCount);
-    expect(proofProgress.txidVersion).to.equal(txidVersion);
-    expect(proofProgress.errMessage).to.be.undefined;
   });
 });

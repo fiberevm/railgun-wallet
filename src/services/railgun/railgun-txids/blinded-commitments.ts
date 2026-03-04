@@ -1,3 +1,1 @@
-import { BlindedCommitment } from '@railgun-community/engine';
-
-export { BlindedCommitment };
+// BlindedCommitment was removed with POI stripping

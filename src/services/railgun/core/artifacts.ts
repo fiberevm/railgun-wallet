@@ -8,7 +8,6 @@ import { ArtifactDownloader } from '../../artifacts/artifact-downloader';
 import { ArtifactStore } from '../../artifacts/artifact-store';
 import {
   getArtifactVariantString,
-  getArtifactVariantStringPOI,
 } from '../../artifacts/artifact-util';
 
 let artifactStore: ArtifactStore;
@@ -78,15 +77,9 @@ const downloadAndCacheArtifact = async (
   return downloadedArtifacts;
 };
 
-const getArtifactsPOI = (maxInputs: number, maxOutputs: number) => {
-  const artifactVariant = getArtifactVariantStringPOI(maxInputs, maxOutputs);
-  return downloadAndCacheArtifact(artifactVariant);
-};
-
 export const artifactGetterDownloadJustInTime: ArtifactGetter = {
   assertArtifactExists,
   getArtifacts,
-  getArtifactsPOI,
 };
 
 export const overrideArtifact = (

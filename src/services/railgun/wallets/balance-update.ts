@@ -7,11 +7,9 @@ import {
   getTokenDataHash,
   getTokenDataNFT,
   getTokenDataERC20,
-  POIProofEventStatus,
 } from '@railgun-community/engine';
 import {
   RailgunBalancesEvent,
-  POIProofProgressEvent,
   RailgunNFTAmount,
   RailgunERC20Amount,
   NetworkName,
@@ -19,13 +17,9 @@ import {
   TXIDVersion,
   NFTTokenType,
   RailgunWalletBalanceBucket,
-  isDefined,
-  networkForChain,
 } from '@railgun-community/shared-models';
 import { sendErrorMessage, sendMessage } from '../../../utils/logger';
 import { parseRailgunTokenAddress } from '../util/bytes';
-import { POIRequired } from '../../poi/poi-required';
-import { getEngine } from '../core/engine';
 
 export type BalancesUpdatedCallback = (
   balancesEvent: RailgunBalancesEvent,
@@ -37,18 +31,6 @@ export const setOnBalanceUpdateCallback = (
   callback?: BalancesUpdatedCallback,
 ) => {
   onBalanceUpdateCallback = callback;
-};
-
-export type POIProofProgressCallback = (
-  poiProofProgressEvent: POIProofProgressEvent,
-) => void;
-
-let onWalletPOIProofProgressCallback: Optional<POIProofProgressCallback>;
-
-export const setOnWalletPOIProofProgressCallback = (
-  callback?: POIProofProgressCallback,
-) => {
-  onWalletPOIProofProgressCallback = callback;
 };
 
 export const getSerializedERC20Balances = (
@@ -137,47 +119,7 @@ export const onBalancesUpdate = async (
       `Wallet balance SCANNED. Getting balances for chain ${chain.type}:${chain.id}.`,
     );
 
-    const network = networkForChain(chain);
-    if (!network) {
-      return;
-    }
-    if (!(await POIRequired.isRequiredForNetwork(network.name))) {
-      // POI not required for this network
-      return getAllBalancesAsSpendable(txidVersion, wallet, chain);
-    }
-
-    // POI required for this network
-    const tokenBalancesByBucket = await wallet.getTokenBalancesByBucket(
-      txidVersion,
-      chain,
-    );
-
-    const balanceBuckets = Object.values(RailgunWalletBalanceBucket);
-
-    balanceBuckets.forEach(balanceBucket => {
-      if (!onBalanceUpdateCallback) {
-        return;
-      }
-
-      const tokenBalances = tokenBalancesByBucket[balanceBucket];
-      if (!isDefined(tokenBalances)) {
-        return;
-      }
-
-      const erc20Amounts = getSerializedERC20Balances(tokenBalances);
-      const nftAmounts = getNFTBalances(tokenBalances);
-
-      const balancesEvent: RailgunBalancesEvent = {
-        txidVersion,
-        chain,
-        erc20Amounts,
-        nftAmounts,
-        railgunWalletID: wallet.id,
-        balanceBucket,
-      };
-
-      onBalanceUpdateCallback(balancesEvent);
-    });
+    return getAllBalancesAsSpendable(txidVersion, wallet, chain);
   } catch (err) {
     if (!(err instanceof Error)) {
       return;
@@ -217,43 +159,6 @@ const getAllBalancesAsSpendable = async (
   };
 
   onBalanceUpdateCallback(balancesEvent);
-};
-
-export const onWalletPOIProofProgress = (
-  status: POIProofEventStatus,
-  txidVersion: TXIDVersion,
-  wallet: AbstractWallet,
-  chain: Chain,
-  progress: number,
-  listKey: string,
-  txid: string,
-  railgunTxid: string,
-  index: number,
-  totalCount: number,
-  errMessage: Optional<string>,
-): void => {
-  sendMessage(
-    `[${listKey}, ${chain.type}:${chain.id}] Wallet POI proof progress: ${progress}.`,
-  );
-  if (!onWalletPOIProofProgressCallback) {
-    return;
-  }
-
-  const poiProofEvent: POIProofProgressEvent = {
-    status,
-    txidVersion,
-    chain,
-    railgunWalletID: wallet.id,
-    progress,
-    listKey,
-    txid,
-    railgunTxid,
-    index,
-    totalCount,
-    errMessage,
-  };
-
-  onWalletPOIProofProgressCallback(poiProofEvent);
 };
 
 export const balanceForERC20Token = async (

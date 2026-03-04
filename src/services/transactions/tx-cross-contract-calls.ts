@@ -391,7 +391,7 @@ export const generateCrossContractCallsProof = async (
     };
 
     // Create real transactions with relay adapt params.
-    const { provedTransactions, preTransactionPOIsPerTxidLeafPerList } =
+    const { provedTransactions } =
       await generateProofTransactions(
         ProofType.CrossContractCalls,
         networkName,
@@ -442,7 +442,7 @@ export const generateCrossContractCallsProof = async (
       broadcasterFeeERC20AmountRecipient,
       sendWithPublicWallet,
       transaction,
-      preTransactionPOIsPerTxidLeafPerList,
+      preTransactionPOIsPerTxidLeafPerList: {},
       overallBatchMinGasPrice,
       nullifiers,
     });

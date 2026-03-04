@@ -9,16 +9,7 @@ const IPFS_GATEWAY = 'https://ipfs-lb.com';
 const MASTER_IPFS_HASH_ARTIFACTS =
   'QmUsmnK4PFc7zDp2cmC4wBZxYLjNyRgWfs5GNcJJ2uLcpU';
 
-const IPFS_HASH_ARTIFACTS_POI =
-  'QmZrP9zaZw2LwErT2yA6VpMWm65UdToQiKj4DtStVsUJHr';
-
-export const ARTIFACT_VARIANT_STRING_POI_PREFIX = 'POI';
-
 export const artifactDownloadsDir = (artifactVariantString: string) => {
-  if (artifactVariantString.startsWith(ARTIFACT_VARIANT_STRING_POI_PREFIX)) {
-    return `artifacts-v2.1/poi-nov-2-23/${artifactVariantString}`;
-  }
-
   return `artifacts-v2.1/${artifactVariantString}`;
 };
 
@@ -27,13 +18,6 @@ export const getArtifactVariantString = (
   commitments: number,
 ) => {
   return `${nullifiers.toString().padStart(2, '0')}x${commitments.toString().padStart(2, '0')}`;
-};
-
-export const getArtifactVariantStringPOI = (
-  maxInputs: number,
-  maxOutputs: number,
-) => {
-  return `${ARTIFACT_VARIANT_STRING_POI_PREFIX}_${maxInputs}x${maxOutputs}`;
 };
 
 export const artifactDownloadsPath = (
@@ -97,40 +81,14 @@ const getArtifactIPFSFilepath = (
   throw new Error('Invalid artifact.');
 };
 
-const getArtifactIPFSFilepathPOI = (artifactName: ArtifactName) => {
-  switch (artifactName) {
-    case ArtifactName.ZKEY:
-      return `zkey.br`;
-    case ArtifactName.WASM:
-      return `wasm.br`;
-    case ArtifactName.VKEY:
-      return `vkey.json`;
-    case ArtifactName.DAT:
-      return `dat.br`;
-  }
-  throw new Error('Invalid artifact.');
-};
-
 export const getArtifactUrl = (
   artifactName: ArtifactName,
   artifactVariantString: string,
 ) => {
-  if (artifactVariantString.startsWith(ARTIFACT_VARIANT_STRING_POI_PREFIX)) {
-    if (
-      artifactVariantString === getArtifactVariantStringPOI(3, 3) ||
-      artifactVariantString === getArtifactVariantStringPOI(13, 13)
-    ) {
-      return `${IPFS_GATEWAY}/ipfs/${IPFS_HASH_ARTIFACTS_POI}/${artifactVariantString}/${getArtifactIPFSFilepathPOI(
-        artifactName,
-      )}`;
-    }
-    throw new Error(`Invalid POI artifact: ${artifactVariantString}.`);
-  }
-
   const artifactFilepath = getArtifactIPFSFilepath(
     artifactName,
     artifactVariantString,
   );
-  
+
   return `${IPFS_GATEWAY}/ipfs/${MASTER_IPFS_HASH_ARTIFACTS}/${artifactFilepath}`;
 };

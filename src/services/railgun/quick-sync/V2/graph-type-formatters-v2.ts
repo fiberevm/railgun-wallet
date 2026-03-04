@@ -77,8 +77,6 @@ export const formatGraphUnshieldEventsV2 = (
       fee: bigIntStringToHex(unshield.fee),
       blockNumber: Number(unshield.blockNumber),
       railgunTxid: undefined,
-      poisPerList: undefined,
-      blindedCommitment: undefined,
     };
   });
 };

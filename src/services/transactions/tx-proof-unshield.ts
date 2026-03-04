@@ -41,7 +41,7 @@ export const generateUnshieldProof = async (
   try {
     setCachedProvedTransaction(undefined);
 
-    const { provedTransactions, preTransactionPOIsPerTxidLeafPerList } =
+    const { provedTransactions } =
       await generateProofTransactions(
         ProofType.Unshield,
         networkName,
@@ -83,7 +83,7 @@ export const generateUnshieldProof = async (
       broadcasterFeeERC20AmountRecipient,
       transaction,
       sendWithPublicWallet,
-      preTransactionPOIsPerTxidLeafPerList,
+      preTransactionPOIsPerTxidLeafPerList: {},
       overallBatchMinGasPrice,
       nullifiers,
     });
@@ -105,7 +105,7 @@ export const generateUnshieldToOriginProof = async (
   try {
     setCachedProvedTransaction(undefined);
 
-    const { provedTransactions, preTransactionPOIsPerTxidLeafPerList } =
+    const { provedTransactions } =
       await generateProofTransactions(
         ProofType.Unshield,
         networkName,
@@ -148,7 +148,7 @@ export const generateUnshieldToOriginProof = async (
       broadcasterFeeERC20AmountRecipient: undefined,
       transaction,
       sendWithPublicWallet: true,
-      preTransactionPOIsPerTxidLeafPerList,
+      preTransactionPOIsPerTxidLeafPerList: {},
       overallBatchMinGasPrice: undefined,
       nullifiers,
     });
@@ -238,7 +238,7 @@ export const generateUnshieldBaseTokenProof = async (
     const memoText: Optional<string> = undefined;
 
     // Generate final txs with relay adapt ID.
-    const { provedTransactions, preTransactionPOIsPerTxidLeafPerList } =
+    const { provedTransactions } =
       await generateProofTransactions(
         ProofType.UnshieldBaseToken,
         networkName,
@@ -285,7 +285,7 @@ export const generateUnshieldBaseTokenProof = async (
       broadcasterFeeERC20AmountRecipient,
       sendWithPublicWallet,
       transaction,
-      preTransactionPOIsPerTxidLeafPerList,
+      preTransactionPOIsPerTxidLeafPerList: {},
       overallBatchMinGasPrice,
       nullifiers,
     });

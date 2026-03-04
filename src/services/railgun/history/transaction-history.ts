@@ -33,16 +33,6 @@ const getRailgunBalanceBucketFromEngineBalanceBucket = (
   switch (balanceBucket) {
     case WalletBalanceBucket.Spendable:
       return RailgunWalletBalanceBucket.Spendable;
-    case WalletBalanceBucket.ShieldBlocked:
-      return RailgunWalletBalanceBucket.ShieldBlocked;
-    case WalletBalanceBucket.ShieldPending:
-      return RailgunWalletBalanceBucket.ShieldPending;
-    case WalletBalanceBucket.ProofSubmitted:
-      return RailgunWalletBalanceBucket.ProofSubmitted;
-    case WalletBalanceBucket.MissingInternalPOI:
-      return RailgunWalletBalanceBucket.MissingInternalPOI;
-    case WalletBalanceBucket.MissingExternalPOI:
-      return RailgunWalletBalanceBucket.MissingExternalPOI;
     case WalletBalanceBucket.Spent:
       return RailgunWalletBalanceBucket.Spent;
   }
@@ -59,8 +49,7 @@ const transactionHistoryReceiveTokenAmountToRailgunERC20Amount = (
     memoText: transactionHistoryReceiveTokenAmount.memoText,
     senderAddress: transactionHistoryReceiveTokenAmount.senderAddress,
     shieldFee: transactionHistoryReceiveTokenAmount.shieldFee,
-    hasValidPOIForActiveLists:
-      transactionHistoryReceiveTokenAmount.hasValidPOIForActiveLists,
+    hasValidPOIForActiveLists: true,
     balanceBucket: getRailgunBalanceBucketFromEngineBalanceBucket(
       transactionHistoryReceiveTokenAmount.balanceBucket,
     ),
@@ -77,8 +66,7 @@ const transactionHistoryReceiveNFTToRailgunNFTAmount = (
     memoText: transactionHistoryReceiveTokenAmount.memoText,
     senderAddress: transactionHistoryReceiveTokenAmount.senderAddress,
     shieldFee: transactionHistoryReceiveTokenAmount.shieldFee,
-    hasValidPOIForActiveLists:
-      transactionHistoryReceiveTokenAmount.hasValidPOIForActiveLists,
+    hasValidPOIForActiveLists: true,
     balanceBucket: getRailgunBalanceBucketFromEngineBalanceBucket(
       transactionHistoryReceiveTokenAmount.balanceBucket,
     ),
@@ -95,8 +83,7 @@ const transactionHistoryTransferTokenAmountToRailgunERC20Amount = (
     recipientAddress: transactionHistoryTokenAmount.recipientAddress,
     memoText: transactionHistoryTokenAmount.memoText,
     walletSource: transactionHistoryTokenAmount.walletSource,
-    hasValidPOIForActiveLists:
-      transactionHistoryTokenAmount.hasValidPOIForActiveLists,
+    hasValidPOIForActiveLists: true,
   };
 };
 
@@ -108,8 +95,7 @@ const transactionHistoryUnshieldTokenAmountToRailgunERC20Amount = (
       transactionHistoryUnshieldTokenAmount,
     ),
     unshieldFee: transactionHistoryUnshieldTokenAmount.unshieldFee,
-    hasValidPOIForActiveLists:
-      transactionHistoryUnshieldTokenAmount.hasValidPOIForActiveLists,
+    hasValidPOIForActiveLists: true,
   };
 };
 
@@ -121,7 +107,7 @@ const transactionHistoryTransferNFTToRailgunNFTAmount = (
     memoText: transactionHistoryNFT.memoText,
     walletSource: transactionHistoryNFT.walletSource,
     recipientAddress: transactionHistoryNFT.recipientAddress,
-    hasValidPOIForActiveLists: transactionHistoryNFT.hasValidPOIForActiveLists,
+    hasValidPOIForActiveLists: true,
   };
 };
 
@@ -131,7 +117,7 @@ const transactionHistoryUnshieldNFTToRailgunNFTAmount = (
   return {
     ...transactionHistoryTransferNFTToRailgunNFTAmount(transactionHistoryNFT),
     unshieldFee: transactionHistoryNFT.unshieldFee,
-    hasValidPOIForActiveLists: transactionHistoryNFT.hasValidPOIForActiveLists,
+    hasValidPOIForActiveLists: true,
   };
 };
 
@@ -143,8 +129,7 @@ const transactionHistoryTokenAmountToRailgunERC20Amount = (
       transactionHistoryTokenAmount.tokenData.tokenAddress,
     ).toLowerCase(),
     amount: transactionHistoryTokenAmount.amount,
-    hasValidPOIForActiveLists:
-      transactionHistoryTokenAmount.hasValidPOIForActiveLists,
+    hasValidPOIForActiveLists: true,
   };
 };
 
@@ -158,7 +143,7 @@ const transactionHistoryNFTToRailgunNFTAmount = (
     nftTokenType: transactionHistoryNFT.tokenData.tokenType as 1 | 2,
     tokenSubID: transactionHistoryNFT.tokenData.tokenSubID,
     amount: transactionHistoryNFT.amount,
-    hasValidPOIForActiveLists: transactionHistoryNFT.hasValidPOIForActiveLists,
+    hasValidPOIForActiveLists: true,
   };
 };
 

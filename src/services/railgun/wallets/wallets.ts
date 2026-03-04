@@ -7,7 +7,6 @@ import {
   AddressData,
   RailgunEngine,
   ByteUtils,
-  POICurrentProofEventData,
   ViewOnlyWallet,
 } from '@railgun-community/engine';
 import {
@@ -17,7 +16,7 @@ import {
   isDefined,
   Chain,
 } from '@railgun-community/shared-models';
-import { onBalancesUpdate, onWalletPOIProofProgress } from './balance-update';
+import { onBalancesUpdate } from './balance-update';
 import { reportAndSanitizeError } from '../../../utils/error';
 import { getAddress } from 'ethers';
 import { getEngine } from '../core/engine';
@@ -80,35 +79,6 @@ const subscribeToEvents = (wallet: AbstractWallet) => {
     ({ txidVersion, chain }: WalletScannedEventData) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       onBalancesUpdate(txidVersion, wallet, chain);
-    },
-  );
-  wallet.on(
-    EngineEvent.POIProofUpdate,
-    ({
-      status,
-      txidVersion,
-      chain,
-      progress,
-      listKey,
-      txid,
-      railgunTxid,
-      index,
-      totalCount,
-      errorMsg,
-    }: POICurrentProofEventData) => {
-      onWalletPOIProofProgress(
-        status,
-        txidVersion,
-        wallet,
-        chain,
-        progress,
-        listKey,
-        txid,
-        railgunTxid,
-        index,
-        totalCount,
-        errorMsg,
-      );
     },
   );
 };

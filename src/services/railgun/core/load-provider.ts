@@ -10,7 +10,6 @@ import {
 } from '@railgun-community/shared-models';
 import { sendMessage } from '../../../utils';
 import { reportAndSanitizeError } from '../../../utils/error';
-import { WalletPOI } from '../../poi/wallet-poi';
 import { getEngine } from './engine';
 import {
   PollingJsonRpcProvider,
@@ -24,7 +23,6 @@ import {
   setFallbackProviderForNetwork,
   setPollingProviderForNetwork,
 } from './providers';
-import { WalletPOINodeInterface } from '../../poi/wallet-poi-node-interface';
 
 const createFallbackProviderForNetwork = async (
   networkName: NetworkName,
@@ -91,7 +89,6 @@ const loadProviderForNetwork = async (
     deploymentBlockPoseidonMerkleAccumulatorV3,
     deploymentBlock,
     publicName,
-    poi,
     supportsV3,
   } = network;
   if (!proxyContract) {
@@ -104,11 +101,6 @@ const loadProviderForNetwork = async (
   }
 
   const engine = getEngine();
-  if (!engine.isPOINode && isDefined(poi) && !WalletPOI.started) {
-    throw new Error(
-      'This network requires Proof Of Innocence. Pass "poiNodeURL" to startRailgunEngine to initialize POI before loading this provider.',
-    );
-  }
 
   const deploymentBlocks: Record<TXIDVersion, number> = {
     [TXIDVersion.V2_PoseidonMerkle]: deploymentBlock ?? 0,
@@ -128,7 +120,6 @@ const loadProviderForNetwork = async (
     fallbackProvider,
     pollingProvider,
     deploymentBlocks,
-    poi?.launchBlock,
     supportsV3,
   );
 };
@@ -156,7 +147,6 @@ export const loadProvider = async (
       fallbackProviderJsonConfig,
       pollingInterval,
     );
-    WalletPOINodeInterface.unpause(chain);
     const { shield: shieldFeeV2, unshield: unshieldFeeV2 } =
       await RailgunVersionedSmartContracts.fees(
         TXIDVersion.V2_PoseidonMerkle,
@@ -196,7 +186,6 @@ export const loadProvider = async (
 export const unloadProvider = async (
   networkName: NetworkName,
 ): Promise<void> => {
-  WalletPOINodeInterface.pause(NETWORK_CONFIG[networkName].chain);
   await fallbackProviderMap[networkName]?.destroy();
   pollingProviderMap[networkName]?.destroy();
   delete fallbackProviderMap[networkName];

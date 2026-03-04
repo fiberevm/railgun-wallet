@@ -3,16 +3,14 @@ import {
   RailgunEngine,
   EngineEvent,
   MerkletreeHistoryScanEventData,
-  POIList,
-  POIListType,
   UTXOScanDecryptBalancesCompleteEventData,
   AbstractWallet,
-  POIMerklerootsValidator,
+  MerklerootValidator,
+  GetLatestValidatedRailgunTxid,
 } from '@railgun-community/engine';
 import {
   MerkletreeScanUpdateEvent,
   isDefined,
-  type Chain,
 } from '@railgun-community/shared-models';
 import { sendErrorMessage, sendMessage } from '../../../utils/logger';
 import {
@@ -24,16 +22,8 @@ import { ArtifactStore } from '../../artifacts/artifact-store';
 import { reportAndSanitizeError } from '../../../utils/error';
 import { quickSyncEventsGraph } from '../quick-sync/quick-sync-events';
 import { quickSyncRailgunTransactionsV2 } from '../railgun-txids/railgun-txid-sync-graph-v2';
-import { WalletPOI } from '../../poi/wallet-poi';
-import {
-  WalletPOINodeInterface,
-  type BatchListUpdateEvent,
-} from '../../poi/wallet-poi-node-interface';
 import { setEngine, getEngine, hasEngine } from './engine';
 import { onBalancesUpdate } from '../wallets/balance-update';
-import { POIValidator } from '../../poi';
-
-export { type BatchListUpdateEvent } from '../../poi/wallet-poi-node-interface';
 
 export type EngineDebugger = {
   log: (msg: string) => void;
@@ -113,20 +103,6 @@ const setOnUTXOScanDecryptBalancesCompleteListener = () => {
   );
 };
 
-export const setBatchListCallback = (
-  onBatchListCallback: (callbackData: BatchListUpdateEvent) => void,
-) => {
-  WalletPOINodeInterface.setListBatchCallback(onBatchListCallback);
-};
-
-export const pausePPOIBatchingForChain = (chain: Chain) => {
-  WalletPOINodeInterface.pause(chain);
-};
-
-export const resumePPOIBatching = (chain: Chain) => {
-  WalletPOINodeInterface.unpause(chain);
-};
-
 /**
  *
  * @param walletSource - Name for your wallet implementation. Encrypted and viewable in private transaction history. Maximum of 16 characters, lowercase.
@@ -135,8 +111,8 @@ export const resumePPOIBatching = (chain: Chain) => {
  * @param artifactStore - Persistent store for downloading large artifact files. See Wallet SDK Developer Guide for platform implementations.
  * @param useNativeArtifacts - Whether to download native C++ or web-assembly artifacts. TRUE for mobile. FALSE for nodejs and browser.
  * @param skipMerkletreeScans - Whether to skip merkletree syncs and private balance scans. Only set to TRUE in shield-only applications that don't load private wallets or balances.
- * @param poiNodeURLs - List of POI aggregator node URLs, in order of priority.
- * @param customPOILists - POI lists to use for additional wallet protections after default lists.
+ * @param validateRailgunTxidMerkleroot - Validator for TXID merkle roots.
+ * @param getLatestValidatedRailgunTxid - Getter for latest validated railgun txid.
  * @returns
  */
 export const startRailgunEngine = async (
@@ -146,8 +122,8 @@ export const startRailgunEngine = async (
   artifactStore: ArtifactStore,
   useNativeArtifacts: boolean,
   skipMerkletreeScans: boolean,
-  poiNodeURLs?: string[],
-  customPOILists?: POIList[],
+  validateRailgunTxidMerkleroot?: MerklerootValidator,
+  getLatestValidatedRailgunTxid?: GetLatestValidatedRailgunTxid,
   verboseScanLogging = false,
 ): Promise<void> => {
   if (hasEngine()) {
@@ -157,59 +133,26 @@ export const startRailgunEngine = async (
     setArtifactStore(artifactStore);
     setUseNativeArtifacts(useNativeArtifacts);
 
+    const defaultMerklerootValidator: MerklerootValidator = () => Promise.resolve(true);
+    const defaultGetLatestValidatedRailgunTxid: GetLatestValidatedRailgunTxid = () =>
+      Promise.resolve({ txidIndex: undefined, merkleroot: undefined });
+
     const engine = await RailgunEngine.initForWallet(
       walletSource,
       db,
       artifactGetterDownloadJustInTime,
       quickSyncEventsGraph,
       quickSyncRailgunTransactionsV2,
-      WalletPOI.getPOITxidMerklerootValidator(poiNodeURLs),
-      WalletPOI.getPOILatestValidatedRailgunTxid(poiNodeURLs),
+      validateRailgunTxidMerkleroot ?? defaultMerklerootValidator,
+      getLatestValidatedRailgunTxid ?? defaultGetLatestValidatedRailgunTxid,
       shouldDebug ? createEngineDebugger(verboseScanLogging) : undefined,
       skipMerkletreeScans,
     );
     setEngine(engine);
 
     setOnUTXOScanDecryptBalancesCompleteListener();
-
-    if (isDefined(poiNodeURLs)) {
-      const poiNodeInterface = new WalletPOINodeInterface(poiNodeURLs);
-      WalletPOI.init(poiNodeInterface, customPOILists ?? []);
-    }
   } catch (err) {
     throw reportAndSanitizeError(startRailgunEngine.name, err);
-  }
-};
-
-export const startRailgunEngineForPOINode = async (
-  db: AbstractLevelDOWN,
-  shouldDebug: boolean,
-  artifactStore: ArtifactStore,
-  validatePOIMerkleroots: POIMerklerootsValidator,
-): Promise<void> => {
-  if (hasEngine()) {
-    return;
-  }
-  try {
-    setArtifactStore(artifactStore);
-    setUseNativeArtifacts(false);
-
-    POIValidator.initForPOINode(validatePOIMerkleroots);
-
-    const engine = await RailgunEngine.initForPOINode(
-      db,
-      artifactGetterDownloadJustInTime,
-      quickSyncEventsGraph,
-      quickSyncRailgunTransactionsV2,
-      shouldDebug
-        ? createEngineDebugger(
-            false, // verboseScanLogging
-          )
-        : undefined,
-    );
-    setEngine(engine);
-  } catch (err) {
-    throw reportAndSanitizeError(startRailgunEngineForPOINode.name, err);
   }
 };
 
@@ -220,5 +163,3 @@ export const stopRailgunEngine = async () => {
   await getEngine()?.unload();
   setEngine(undefined);
 };
-
-export { POIList, POIListType };

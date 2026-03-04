@@ -31,7 +31,7 @@ export const generateTransferProof = async (
   try {
     setCachedProvedTransaction(undefined);
 
-    const { provedTransactions, preTransactionPOIsPerTxidLeafPerList } =
+    const { provedTransactions } =
       await generateProofTransactions(
         ProofType.Transfer,
         networkName,
@@ -73,7 +73,7 @@ export const generateTransferProof = async (
       broadcasterFeeERC20AmountRecipient,
       sendWithPublicWallet,
       transaction,
-      preTransactionPOIsPerTxidLeafPerList,
+      preTransactionPOIsPerTxidLeafPerList: {},
       overallBatchMinGasPrice,
       nullifiers,
     });
