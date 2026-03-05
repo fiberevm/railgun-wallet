@@ -3219,7 +3219,7 @@ const arbitrumOneHandler = new GraphqlHandler({
             });
 const sepoliaHandler = new GraphqlHandler({
               name: "sepolia",
-              config: {"endpoint":"https://rail-squid.squids.live/squid-railgun-eth-sepolia-v2/graphql"},
+              config: {"endpoint":"http://localhost:4350/graphql"},
               baseDir,
               cache,
               pubsub,
