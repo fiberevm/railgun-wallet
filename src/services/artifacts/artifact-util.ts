@@ -4,10 +4,8 @@ import {
 } from '@railgun-community/shared-models';
 import brotliDecompress from 'brotli/decompress';
 
-const IPFS_GATEWAY = 'https://ipfs-lb.com';
-
-const MASTER_IPFS_HASH_ARTIFACTS =
-  'QmUsmnK4PFc7zDp2cmC4wBZxYLjNyRgWfs5GNcJJ2uLcpU';
+const ARTIFACT_CDN_BASE_URL =
+  'https://d28nqgx4vebmjg.cloudfront.net/railgun/v2';
 
 export const artifactDownloadsDir = (artifactVariantString: string) => {
   return `artifacts-v2.1/${artifactVariantString}`;
@@ -64,7 +62,7 @@ export const decompressArtifact = (arrayBuffer: ArrayBuffer): Uint8Array => {
   return decompress(Buffer.from(arrayBuffer));
 };
 
-const getArtifactIPFSFilepath = (
+const getArtifactFilepath = (
   artifactName: ArtifactName,
   artifactVariantString: string,
 ) => {
@@ -85,10 +83,10 @@ export const getArtifactUrl = (
   artifactName: ArtifactName,
   artifactVariantString: string,
 ) => {
-  const artifactFilepath = getArtifactIPFSFilepath(
+  const artifactFilepath = getArtifactFilepath(
     artifactName,
     artifactVariantString,
   );
 
-  return `${IPFS_GATEWAY}/ipfs/${MASTER_IPFS_HASH_ARTIFACTS}/${artifactFilepath}`;
+  return `${ARTIFACT_CDN_BASE_URL}/${artifactFilepath}`;
 };
