@@ -1,5 +1,7 @@
 import {
   RailgunWallet,
+  DelegatedSignWallet,
+  SignDelegate,
   EngineEvent,
   WalletScannedEventData,
   AbstractWallet,
@@ -8,6 +10,8 @@ import {
   RailgunEngine,
   ByteUtils,
   ViewOnlyWallet,
+  ViewingKeyPair,
+  SpendingPublicKey,
 } from '@railgun-community/engine';
 import {
   RailgunWalletInfo,
@@ -184,6 +188,32 @@ export const createRailgunWallet = async (
     );
   } catch (err) {
     throw reportAndSanitizeError(createRailgunWallet.name, err);
+  }
+};
+
+export const createRailgunWalletFromKeys = async (
+  encryptionKey: string,
+  viewingKeyPair: ViewingKeyPair,
+  spendingPublicKey: SpendingPublicKey,
+  creationBlockNumbers: Optional<MapType<number>>,
+  signDelegate: SignDelegate,
+): Promise<RailgunWalletInfo> => {
+  try {
+    const formattedCreationBlockNumbers =
+      formatCreationBlockNumbers(creationBlockNumbers);
+
+    const engine = getEngine();
+    const wallet = await engine.createWalletFromKeys(
+      encryptionKey,
+      viewingKeyPair,
+      spendingPublicKey,
+      formattedCreationBlockNumbers,
+      signDelegate,
+    );
+    subscribeToEvents(wallet);
+    return infoForWallet(wallet);
+  } catch (err) {
+    throw reportAndSanitizeError(createRailgunWalletFromKeys.name, err);
   }
 };
 
