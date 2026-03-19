@@ -2,14 +2,14 @@
   "name": "@railgun-community/wallet",
   "version": "10.8.3",
   "description": "RAILGUN Wallet SDK, compatible with mobile, browser and nodejs environments.",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "license": "MIT",
   "files": [
-    "src/**/*",
+    "dist/**/*",
     "*.js"
   ],
   "exports": {
-    ".": "./src/index.ts",
+    ".": "./dist/index.js",
     "./react-native-shims": "./react-native-shims.js"
   },
   "scripts": {
