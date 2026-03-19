@@ -1,0 +1,10 @@
+import { Chain, AbstractWallet, TokenType, TokenBalances, NFTTokenData, getTokenDataHash, getTokenDataNFT, getTokenDataERC20 } from '@railgun-community/engine';
+import { RailgunBalancesEvent, RailgunNFTAmount, RailgunERC20Amount, NetworkName, TXIDVersion, NFTTokenType } from '@railgun-community/shared-models';
+export type BalancesUpdatedCallback = (balancesEvent: RailgunBalancesEvent) => void;
+export declare const setOnBalanceUpdateCallback: (callback?: BalancesUpdatedCallback) => void;
+export declare const getSerializedERC20Balances: (balances: TokenBalances) => RailgunERC20Amount[];
+export declare const getSerializedNFTBalances: (balances: TokenBalances) => RailgunNFTAmount[];
+export declare const onBalancesUpdate: (txidVersion: TXIDVersion, wallet: AbstractWallet, chain: Chain) => Promise<void>;
+export declare const balanceForERC20Token: (txidVersion: TXIDVersion, wallet: AbstractWallet, networkName: NetworkName, tokenAddress: string, onlySpendable: boolean) => Promise<bigint>;
+export declare const balanceForNFT: (txidVersion: TXIDVersion, wallet: AbstractWallet, networkName: NetworkName, nftTokenData: NFTTokenData, onlySpendable: boolean) => Promise<bigint>;
+export { getTokenDataHash, getTokenDataNFT, getTokenDataERC20, TokenType, NFTTokenType, NFTTokenData, };

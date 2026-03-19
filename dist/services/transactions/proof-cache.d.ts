@@ -1,0 +1,28 @@
+import { NetworkName, ProofType, RailgunNFTAmountRecipient, RailgunERC20Amount, RailgunERC20AmountRecipient, RailgunNFTAmount, TransactionGasDetails, RailgunERC20Recipient, TXIDVersion } from '@railgun-community/shared-models';
+import { ContractTransaction } from 'ethers';
+export type ProvedTransaction = {
+    proofType: ProofType;
+    txidVersion: TXIDVersion;
+    transaction: ContractTransaction;
+    railgunWalletID: string;
+    showSenderAddressToRecipient: boolean;
+    memoText: Optional<string>;
+    erc20AmountRecipients: RailgunERC20AmountRecipient[];
+    nftAmountRecipients: RailgunNFTAmountRecipient[];
+    relayAdaptUnshieldERC20Amounts: Optional<RailgunERC20Amount[]>;
+    relayAdaptUnshieldNFTAmounts: Optional<RailgunNFTAmount[]>;
+    relayAdaptShieldERC20Recipients: Optional<RailgunERC20Recipient[]>;
+    relayAdaptShieldNFTRecipients: Optional<RailgunNFTAmount[]>;
+    crossContractCalls: Optional<ContractTransaction[]>;
+    broadcasterFeeERC20AmountRecipient: Optional<RailgunERC20AmountRecipient>;
+    sendWithPublicWallet: boolean;
+    overallBatchMinGasPrice: Optional<bigint>;
+    nullifiers: string[];
+};
+export declare const populateProvedTransaction: (txidVersion: TXIDVersion, networkName: NetworkName, proofType: ProofType, railgunWalletID: string, showSenderAddressToRecipient: boolean, memoText: Optional<string>, erc20AmountRecipients: RailgunERC20AmountRecipient[], nftAmountRecipients: RailgunNFTAmountRecipient[], relayAdaptUnshieldERC20Amounts: Optional<RailgunERC20Amount[]>, relayAdaptUnshieldNFTAmounts: Optional<RailgunNFTAmount[]>, relayAdaptShieldERC20Recipients: Optional<RailgunERC20Recipient[]>, relayAdaptShieldNFTRecipients: Optional<RailgunNFTAmount[]>, crossContractCalls: Optional<ContractTransaction[]>, broadcasterFeeERC20AmountRecipient: Optional<RailgunERC20AmountRecipient>, sendWithPublicWallet: boolean, overallBatchMinGasPrice: Optional<bigint>, gasDetails: TransactionGasDetails) => Promise<{
+    transaction: ContractTransaction;
+    nullifiers: string[];
+}>;
+export declare const setCachedProvedTransaction: (tx?: ProvedTransaction) => void;
+export declare const getCachedProvedTransaction: () => ProvedTransaction;
+export declare const validateCachedProvedTransaction: (txidVersion: TXIDVersion, networkName: NetworkName, proofType: ProofType, railgunWalletID: string, showSenderAddressToRecipient: boolean, memoText: Optional<string>, erc20AmountRecipients: RailgunERC20AmountRecipient[], nftAmountRecipients: RailgunNFTAmountRecipient[], relayAdaptUnshieldERC20Amounts: Optional<RailgunERC20Amount[]>, relayAdaptUnshieldNFTAmounts: Optional<RailgunNFTAmount[]>, relayAdaptShieldERC20Recipients: Optional<RailgunERC20Recipient[]>, relayAdaptShieldNFTRecipients: Optional<RailgunNFTAmount[]>, crossContractCalls: Optional<ContractTransaction[]>, broadcasterFeeERC20AmountRecipient: Optional<RailgunERC20AmountRecipient>, sendWithPublicWallet: boolean, overallBatchMinGasPrice: Optional<bigint>) => void;
