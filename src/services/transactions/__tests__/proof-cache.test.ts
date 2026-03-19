@@ -59,8 +59,6 @@ const nullifiers = ['0x1234'];
 const sendWithPublicWallet = false;
 const overallBatchMinGasPrice = BigInt('0x1000');
 
-const preTransactionPOIsPerTxidLeafPerList = {};
-
 const setCached = (proofType: ProofType) => {
   setCachedProvedTransaction({
     proofType,
@@ -78,7 +76,6 @@ const setCached = (proofType: ProofType) => {
     crossContractCalls,
     broadcasterFeeERC20AmountRecipient,
     sendWithPublicWallet: false,
-    preTransactionPOIsPerTxidLeafPerList,
     overallBatchMinGasPrice,
     nullifiers,
   });

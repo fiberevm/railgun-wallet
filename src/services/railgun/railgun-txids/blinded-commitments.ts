@@ -1,1 +1,1 @@
-// BlindedCommitment was removed with POI stripping
+// Intentionally empty.

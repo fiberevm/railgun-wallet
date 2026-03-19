@@ -196,7 +196,6 @@ describe('tx-cross-contract-calls', () => {
           nullifiers: MOCK_NULLIFIERS,
         },
       ] as (TransactionStructV2 | TransactionStructV3)[],
-      preTransactionPOIsPerTxidLeafPerList: {},
     });
     railDummyProveStub = Sinon.stub(
       TransactionBatch.prototype,

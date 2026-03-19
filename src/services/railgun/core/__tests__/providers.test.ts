@@ -69,8 +69,6 @@ describe('providers', () => {
       ),
     ).to.throw;
 
-    // expect(getTXIDMerkletreeForNetwork(txidVersion, NetworkName.EthereumSepolia))
-    //   .to.be.undefined; // Until poi.launchBlock is defined.
     expect(() =>
       getTXIDMerkletreeForNetwork(
         txidVersion,

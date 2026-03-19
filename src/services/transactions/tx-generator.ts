@@ -486,7 +486,7 @@ const generateAllProofs = async (
     txidVersion,
     encryptionKey,
     progressCallback,
-    false, // shouldGeneratePreTransactionPOIs
+    false,
     originShieldTxidForSpendabilityOverride,
   );
 };

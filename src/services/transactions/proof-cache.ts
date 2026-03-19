@@ -9,7 +9,6 @@ import {
   isDefined,
   RailgunERC20Recipient,
   TXIDVersion,
-  PreTransactionPOIsPerTxidLeafPerList,
 } from '@railgun-community/shared-models';
 import { shouldSetOverallBatchMinGasPriceForNetwork } from '../../utils/gas-price';
 import { compareContractTransactionArrays } from '../../utils/utils';
@@ -41,7 +40,6 @@ export type ProvedTransaction = {
   broadcasterFeeERC20AmountRecipient: Optional<RailgunERC20AmountRecipient>;
   sendWithPublicWallet: boolean;
   overallBatchMinGasPrice: Optional<bigint>;
-  preTransactionPOIsPerTxidLeafPerList: PreTransactionPOIsPerTxidLeafPerList;
   nullifiers: string[];
 };
 
@@ -68,7 +66,6 @@ export const populateProvedTransaction = async (
 ): Promise<{
   transaction: ContractTransaction;
   nullifiers: string[];
-  preTransactionPOIsPerTxidLeafPerList: PreTransactionPOIsPerTxidLeafPerList;
 }> => {
   try {
     validateCachedProvedTransaction(
@@ -98,8 +95,7 @@ export const populateProvedTransaction = async (
     throw new Error(`Invalid proof for this transaction`, { cause });
   }
 
-  const { transaction, nullifiers, preTransactionPOIsPerTxidLeafPerList } =
-    getCachedProvedTransaction();
+  const { transaction, nullifiers } = getCachedProvedTransaction();
 
   setGasDetailsForTransaction(
     networkName,
@@ -108,7 +104,7 @@ export const populateProvedTransaction = async (
     sendWithPublicWallet,
   );
 
-  return { transaction, nullifiers, preTransactionPOIsPerTxidLeafPerList };
+  return { transaction, nullifiers };
 };
 
 export const setCachedProvedTransaction = (tx?: ProvedTransaction) => {

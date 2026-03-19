@@ -154,32 +154,31 @@ export const populateProvedCrossContractCalls = async (
   gasDetails: TransactionGasDetails,
 ): Promise<RailgunPopulateTransactionResponse> => {
   try {
-    const { transaction, nullifiers, preTransactionPOIsPerTxidLeafPerList } =
-      await populateProvedTransaction(
-        txidVersion,
-        networkName,
-        ProofType.CrossContractCalls,
-        railgunWalletID,
-        false, // showSenderAddressToRecipient
-        undefined, // memoText
-        [], // erc20AmountRecipients
-        [], // nftAmountRecipients
-        relayAdaptUnshieldERC20Amounts,
-        relayAdaptUnshieldNFTAmounts,
-        relayAdaptShieldERC20Recipients,
-        relayAdaptShieldNFTRecipients,
-        crossContractCalls,
-        broadcasterFeeERC20AmountRecipient,
-        sendWithPublicWallet,
-        overallBatchMinGasPrice,
-        gasDetails,
-      );
+    const { transaction, nullifiers } = await populateProvedTransaction(
+      txidVersion,
+      networkName,
+      ProofType.CrossContractCalls,
+      railgunWalletID,
+      false, // showSenderAddressToRecipient
+      undefined, // memoText
+      [], // erc20AmountRecipients
+      [], // nftAmountRecipients
+      relayAdaptUnshieldERC20Amounts,
+      relayAdaptUnshieldNFTAmounts,
+      relayAdaptShieldERC20Recipients,
+      relayAdaptShieldNFTRecipients,
+      crossContractCalls,
+      broadcasterFeeERC20AmountRecipient,
+      sendWithPublicWallet,
+      overallBatchMinGasPrice,
+      gasDetails,
+    );
     delete transaction.from;
 
     return {
       nullifiers,
       transaction,
-      preTransactionPOIsPerTxidLeafPerList,
+      preTransactionPOIsPerTxidLeafPerList: {},
     };
   } catch (err) {
     throw reportAndSanitizeError(populateProvedCrossContractCalls.name, err);
@@ -442,7 +441,6 @@ export const generateCrossContractCallsProof = async (
       broadcasterFeeERC20AmountRecipient,
       sendWithPublicWallet,
       transaction,
-      preTransactionPOIsPerTxidLeafPerList: {},
       overallBatchMinGasPrice,
       nullifiers,
     });

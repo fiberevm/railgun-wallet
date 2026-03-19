@@ -83,7 +83,6 @@ export const generateUnshieldProof = async (
       broadcasterFeeERC20AmountRecipient,
       transaction,
       sendWithPublicWallet,
-      preTransactionPOIsPerTxidLeafPerList: {},
       overallBatchMinGasPrice,
       nullifiers,
     });
@@ -148,7 +147,6 @@ export const generateUnshieldToOriginProof = async (
       broadcasterFeeERC20AmountRecipient: undefined,
       transaction,
       sendWithPublicWallet: true,
-      preTransactionPOIsPerTxidLeafPerList: {},
       overallBatchMinGasPrice: undefined,
       nullifiers,
     });
@@ -285,7 +283,6 @@ export const generateUnshieldBaseTokenProof = async (
       broadcasterFeeERC20AmountRecipient,
       sendWithPublicWallet,
       transaction,
-      preTransactionPOIsPerTxidLeafPerList: {},
       overallBatchMinGasPrice,
       nullifiers,
     });

@@ -178,7 +178,6 @@ describe('tx-transfer', () => {
           nullifiers: MOCK_NULLIFIERS,
         },
       ] as (TransactionStructV2 | TransactionStructV3)[],
-      preTransactionPOIsPerTxidLeafPerList: {},
     });
     railDummyProveStub = Sinon.stub(
       TransactionBatch.prototype,
