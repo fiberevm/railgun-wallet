@@ -47,6 +47,17 @@ const txsSubgraphSourceNameForNetwork = (networkName: NetworkName): string => {
   }
 };
 
+const supportsRailgunTransactionSyncForNetwork = (
+  networkName: NetworkName,
+): boolean => {
+  try {
+    txsSubgraphSourceNameForNetwork(networkName);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export const getRailgunTxDataForUnshields = async (
   chain: Chain,
   txid: string,
@@ -205,7 +216,7 @@ export const quickSyncRailgunTransactionsV2 = async (
   latestGraphID: Optional<string>,
 ): Promise<RailgunTransactionV2[]> => {
   const network = networkForChain(chain);
-  if (!network || !isDefined(network.poi)) {
+  if (!network || !supportsRailgunTransactionSyncForNetwork(network.name)) {
     return [];
   }
 

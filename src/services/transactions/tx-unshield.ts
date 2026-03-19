@@ -49,30 +49,29 @@ export const populateProvedUnshield = async (
   gasDetails: TransactionGasDetails,
 ): Promise<RailgunPopulateTransactionResponse> => {
   try {
-    const { transaction, nullifiers, preTransactionPOIsPerTxidLeafPerList } =
-      await populateProvedTransaction(
-        txidVersion,
-        networkName,
-        ProofType.Unshield,
-        railgunWalletID,
-        false, // showSenderAddressToRecipient
-        undefined, // memoText
-        erc20AmountRecipients,
-        nftAmountRecipients,
-        undefined, // relayAdaptUnshieldERC20AmountRecipients
-        undefined, // relayAdaptUnshieldNFTAmounts
-        undefined, // relayAdaptShieldERC20Recipients
-        undefined, // relayAdaptShieldNFTRecipients
-        undefined, // crossContractCalls
-        broadcasterFeeERC20AmountRecipient,
-        sendWithPublicWallet,
-        overallBatchMinGasPrice,
-        gasDetails,
-      );
+    const { transaction, nullifiers } = await populateProvedTransaction(
+      txidVersion,
+      networkName,
+      ProofType.Unshield,
+      railgunWalletID,
+      false, // showSenderAddressToRecipient
+      undefined, // memoText
+      erc20AmountRecipients,
+      nftAmountRecipients,
+      undefined, // relayAdaptUnshieldERC20AmountRecipients
+      undefined, // relayAdaptUnshieldNFTAmounts
+      undefined, // relayAdaptShieldERC20Recipients
+      undefined, // relayAdaptShieldNFTRecipients
+      undefined, // crossContractCalls
+      broadcasterFeeERC20AmountRecipient,
+      sendWithPublicWallet,
+      overallBatchMinGasPrice,
+      gasDetails,
+    );
     return {
       nullifiers,
       transaction,
-      preTransactionPOIsPerTxidLeafPerList,
+      preTransactionPOIsPerTxidLeafPerList: {},
     };
   } catch (err) {
     throw reportAndSanitizeError(populateProvedUnshield.name, err);
@@ -104,30 +103,29 @@ export const populateProvedUnshieldBaseToken = async (
     // Empty NFT Recipients.
     const nftAmountRecipients: RailgunNFTAmountRecipient[] = [];
 
-    const { transaction, nullifiers, preTransactionPOIsPerTxidLeafPerList } =
-      await populateProvedTransaction(
-        txidVersion,
-        networkName,
-        ProofType.UnshieldBaseToken,
-        railgunWalletID,
-        false, // showSenderAddressToRecipient
-        undefined, // memoText
-        erc20AmountRecipients,
-        nftAmountRecipients,
-        relayAdaptUnshieldERC20Amounts,
-        undefined, // relayAdaptUnshieldNFTAmounts
-        undefined, // relayAdaptShieldERC20Recipients
-        undefined, // relayAdaptShieldNFTRecipients
-        undefined, // crossContractCalls
-        broadcasterFeeERC20AmountRecipient,
-        sendWithPublicWallet,
-        overallBatchMinGasPrice,
-        gasDetails,
-      );
+    const { transaction, nullifiers } = await populateProvedTransaction(
+      txidVersion,
+      networkName,
+      ProofType.UnshieldBaseToken,
+      railgunWalletID,
+      false, // showSenderAddressToRecipient
+      undefined, // memoText
+      erc20AmountRecipients,
+      nftAmountRecipients,
+      relayAdaptUnshieldERC20Amounts,
+      undefined, // relayAdaptUnshieldNFTAmounts
+      undefined, // relayAdaptShieldERC20Recipients
+      undefined, // relayAdaptShieldNFTRecipients
+      undefined, // crossContractCalls
+      broadcasterFeeERC20AmountRecipient,
+      sendWithPublicWallet,
+      overallBatchMinGasPrice,
+      gasDetails,
+    );
     return {
       nullifiers,
       transaction,
-      preTransactionPOIsPerTxidLeafPerList,
+      preTransactionPOIsPerTxidLeafPerList: {},
     };
   } catch (err) {
     throw reportAndSanitizeError(populateProvedUnshieldBaseToken.name, err);
@@ -387,30 +385,29 @@ export const populateProvedUnshieldToOrigin = async (
   gasDetails: TransactionGasDetails,
 ): Promise<RailgunPopulateTransactionResponse> => {
   try {
-    const { transaction, nullifiers, preTransactionPOIsPerTxidLeafPerList } =
-      await populateProvedTransaction(
-        txidVersion,
-        networkName,
-        ProofType.Unshield,
-        railgunWalletID,
-        false, // showSenderAddressToRecipient
-        undefined, // memoText
-        erc20AmountRecipients,
-        nftAmountRecipients,
-        undefined, // relayAdaptUnshieldERC20AmountRecipients
-        undefined, // relayAdaptUnshieldNFTAmounts
-        undefined, // relayAdaptShieldERC20Recipients
-        undefined, // relayAdaptShieldNFTRecipients
-        undefined, // crossContractCalls
-        undefined, // broadcasterFeeERC20AmountRecipient
-        true, // sendWithPublicWallet
-        undefined, // overallBatchMinGasPrice
-        gasDetails,
-      );
+    const { transaction, nullifiers } = await populateProvedTransaction(
+      txidVersion,
+      networkName,
+      ProofType.Unshield,
+      railgunWalletID,
+      false, // showSenderAddressToRecipient
+      undefined, // memoText
+      erc20AmountRecipients,
+      nftAmountRecipients,
+      undefined, // relayAdaptUnshieldERC20AmountRecipients
+      undefined, // relayAdaptUnshieldNFTAmounts
+      undefined, // relayAdaptShieldERC20Recipients
+      undefined, // relayAdaptShieldNFTRecipients
+      undefined, // crossContractCalls
+      undefined, // broadcasterFeeERC20AmountRecipient
+      true, // sendWithPublicWallet
+      undefined, // overallBatchMinGasPrice
+      gasDetails,
+    );
     return {
       nullifiers,
       transaction,
-      preTransactionPOIsPerTxidLeafPerList,
+      preTransactionPOIsPerTxidLeafPerList: {},
     };
   } catch (err) {
     throw reportAndSanitizeError(populateProvedUnshieldToOrigin.name, err);
