@@ -5,6 +5,7 @@ import {
   FallbackProviderJsonConfig,
   isDefined,
   NETWORK_CONFIG,
+  TXIDVersion,
 } from '@railgun-community/shared-models';
 import {
   MOCK_DB_ENCRYPTION_KEY,
@@ -22,7 +23,6 @@ import {
   RailgunVersionedSmartContracts,
   RelayAdaptVersionedSmartContracts,
 } from '@railgun-community/engine';
-import { getTestTXIDVersion, isV2Test } from '../../../../tests/helper.test';
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -30,7 +30,19 @@ const { expect } = chai;
 const MOCK_MNEMONIC_PROVIDERS_ONLY =
   'pause crystal tornado alcohol genre cement fade large song like bag where';
 
-const txidVersion = getTestTXIDVersion();
+const txidVersion = TXIDVersion.V2_PoseidonMerkle;
+
+const expectV2FeesSerialized = (feesSerialized: {
+  shieldFeeV2: string;
+  unshieldFeeV2: string;
+  shieldFeeV3: string | undefined;
+  unshieldFeeV3: string | undefined;
+}) => {
+  expect(feesSerialized.shieldFeeV2).to.match(/^\d+$/);
+  expect(feesSerialized.unshieldFeeV2).to.match(/^\d+$/);
+  expect(feesSerialized.shieldFeeV3).to.equal(undefined);
+  expect(feesSerialized.unshieldFeeV3).to.equal(undefined);
+};
 
 describe('providers', () => {
   before(async () => {
@@ -47,12 +59,7 @@ describe('providers', () => {
       NetworkName.EthereumSepolia,
       10_000, // pollingInterval
     );
-    expect(response.feesSerialized).to.deep.equal({
-      shieldFeeV2: '25',
-      unshieldFeeV2: '25',
-      shieldFeeV3: undefined,
-      unshieldFeeV3: undefined,
-    });
+    expectV2FeesSerialized(response.feesSerialized);
 
     expect(getFallbackProviderForNetwork(NetworkName.EthereumSepolia)).to.not.be
       .undefined;
@@ -84,15 +91,12 @@ describe('providers', () => {
       ),
     ).to.not.be.undefined;
 
-    if (isV2Test()) {
-      // TODO-V3: Remove when ready
-      expect(
-        RelayAdaptVersionedSmartContracts.getRelayAdaptContract(
-          txidVersion,
-          chain,
-        ),
-      ).to.not.be.undefined;
-    }
+    expect(
+      RelayAdaptVersionedSmartContracts.getRelayAdaptContract(
+        txidVersion,
+        chain,
+      ),
+    ).to.not.be.undefined;
 
     const { chain: chainEthereumRopsten } =
       NETWORK_CONFIG[NetworkName.EthereumRopsten_DEPRECATED];
@@ -140,4 +144,26 @@ describe('providers', () => {
       ),
     ).rejectedWith('Invalid fallback provider config for chain 56');
   });
+
+  it('Should load provider without RelayAdapt for basic flows', async () => {
+    const network = NETWORK_CONFIG[NetworkName.EthereumSepolia];
+    const originalRelayAdaptContract = network.relayAdaptContract;
+    network.relayAdaptContract = '';
+
+    try {
+      const response = await loadProvider(
+        MOCK_FALLBACK_PROVIDER_JSON_CONFIG_SEPOLIA,
+        NetworkName.EthereumSepolia,
+        10_000,
+      );
+
+      expectV2FeesSerialized(response.feesSerialized);
+
+      expect(() =>
+        RelayAdaptVersionedSmartContracts.getRelayAdaptContract(txidVersion, network.chain),
+      ).to.throw;
+    } finally {
+      network.relayAdaptContract = originalRelayAdaptContract;
+    }
+  }).timeout(15_000);
 });

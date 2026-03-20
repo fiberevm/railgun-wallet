@@ -3,13 +3,18 @@
   "version": "10.8.3",
   "description": "RAILGUN Wallet SDK, compatible with mobile, browser and nodejs environments.",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "files": [
     "dist/**/*",
     "*.js"
   ],
   "exports": {
-    ".": "./dist/index.js",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
     "./react-native-shims": "./react-native-shims.js"
   },
   "scripts": {
@@ -50,8 +55,8 @@
     "@graphql-mesh/types": "^0.91.14",
     "@graphql-mesh/utils": "^0.43.22",
     "@noble/ed25519": "^1.7.1",
-    "@railgun-community/engine": "github:fiberevm/railgun-engine#f8941f7",
-    "@railgun-community/shared-models": "github:fiberevm/railgun-shared-models#3d69efb",
+    "@railgun-community/engine": "github:fiberevm/railgun-engine",
+    "@railgun-community/shared-models": "github:fiberevm/railgun-shared-models",
     "@whatwg-node/fetch": "^0.8.4",
     "assert": "2.0.0",
     "axios": "1.7.2",
