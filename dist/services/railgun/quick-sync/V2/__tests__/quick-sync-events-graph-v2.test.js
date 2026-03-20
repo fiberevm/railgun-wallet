@@ -1,0 +1,148 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable no-bitwise */
+const engine_1 = require("@railgun-community/engine");
+const shared_models_1 = require("@railgun-community/shared-models");
+const chai_1 = __importDefault(require("chai"));
+const chai_as_promised_1 = __importDefault(require("chai-as-promised"));
+const quick_sync_events_1 = require("../../quick-sync-events");
+const helper_test_1 = require("../../../../../tests/helper.test");
+chai_1.default.use(chai_as_promised_1.default);
+const { expect } = chai_1.default;
+const txidVersion = engine_1.TXIDVersion.V2_PoseidonMerkle;
+const ETH_CHAIN = shared_models_1.NETWORK_CONFIG[shared_models_1.NetworkName.Ethereum].chain;
+const EXPECTED_COMMITMENT_GROUP_EVENTS_ETH = 20000;
+const EXPECTED_NULLIFIER_EVENTS_ETH = 27000;
+const EXPECTED_UNSHIELD_EVENTS_ETH = 10000;
+const POLYGON_CHAIN = shared_models_1.NETWORK_CONFIG[shared_models_1.NetworkName.Polygon].chain;
+const EXPECTED_COMMITMENT_GROUP_EVENTS_POLYGON = 20000;
+const EXPECTED_NULLIFIER_EVENTS_POLYGON = 30000;
+const EXPECTED_UNSHIELD_EVENTS_POLYGON = 10000;
+const BNB_CHAIN = shared_models_1.NETWORK_CONFIG[shared_models_1.NetworkName.BNBChain].chain;
+const EXPECTED_COMMITMENT_GROUP_EVENTS_BNB = 9000;
+const EXPECTED_NULLIFIER_EVENTS_BNB = 12000;
+const EXPECTED_UNSHIELD_EVENTS_BNB = 4000;
+const ARBITRUM_CHAIN = shared_models_1.NETWORK_CONFIG[shared_models_1.NetworkName.Arbitrum].chain;
+const EXPECTED_COMMITMENT_GROUP_EVENTS_ARBITRUM = 17000;
+const EXPECTED_NULLIFIER_EVENTS_ARBITRUM = 22000;
+const EXPECTED_UNSHIELD_EVENTS_ARBITRUM = 9000;
+const SEPOLIA_CHAIN = shared_models_1.NETWORK_CONFIG[shared_models_1.NetworkName.EthereumSepolia].chain;
+const EXPECTED_COMMITMENT_GROUP_EVENTS_SEPOLIA = 1;
+const EXPECTED_NULLIFIER_EVENTS_SEPOLIA = 1;
+const EXPECTED_UNSHIELD_EVENTS_SEPOLIA = 1;
+const assertContiguousCommitmentEvents = (commitmentEvents, shouldThrow) => {
+    const sortedEvents = [...commitmentEvents].sort((a, b) => {
+        if (a.treeNumber !== b.treeNumber) {
+            return a.treeNumber - b.treeNumber;
+        }
+        return a.startPosition - b.startPosition;
+    });
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < sortedEvents.length - 1; i++) {
+        const currentEvent = sortedEvents[i];
+        const nextEvent = sortedEvents[i + 1];
+        if (currentEvent.treeNumber === nextEvent.treeNumber) {
+            const currentMaxIndex = Math.max(...currentEvent.commitments.map(c => c.utxoIndex));
+            if (nextEvent.startPosition > currentMaxIndex + 1) {
+                if (shouldThrow) {
+                    throw new Error(`Gap in sequence (tree ${currentEvent.treeNumber}): found ${nextEvent.startPosition} after ${currentEvent.startPosition} (max index: ${currentMaxIndex})`);
+                }
+            }
+        }
+        else if (nextEvent.treeNumber !== currentEvent.treeNumber + 1) {
+            if (shouldThrow) {
+                throw new Error(`Gap in trees: found ${nextEvent.treeNumber} after ${currentEvent.treeNumber}`);
+            }
+        }
+    }
+};
+describe('quick-sync-events-graph-v2', () => {
+    it('[V2] Should make sure Graph V2 query has no data gaps in commitments - Ethereum', async function run() {
+        if (!(0, helper_test_1.isV2Test)()) {
+            this.skip();
+            return;
+        }
+        const eventLog = await (0, quick_sync_events_1.quickSyncEventsGraph)(txidVersion, ETH_CHAIN, 14858124);
+        expect(eventLog).to.be.an('object');
+        expect(eventLog.commitmentEvents).to.be.an('array');
+        expect(eventLog.commitmentEvents.length).to.be.at.least(EXPECTED_COMMITMENT_GROUP_EVENTS_ETH);
+        expect(eventLog.nullifierEvents.length).to.be.at.least(EXPECTED_NULLIFIER_EVENTS_ETH);
+        expect(eventLog.unshieldEvents.length).to.be.at.least(EXPECTED_UNSHIELD_EVENTS_ETH);
+        const shouldThrow = true;
+        assertContiguousCommitmentEvents(eventLog.commitmentEvents, shouldThrow);
+    }).timeout(200000);
+    it('[V2] Should make sure Graph V2 query has no data gaps in commitments - Polygon', async function run() {
+        if (!(0, helper_test_1.isV2Test)()) {
+            this.skip();
+            return;
+        }
+        const eventLog = await (0, quick_sync_events_1.quickSyncEventsGraph)(txidVersion, POLYGON_CHAIN, 0);
+        expect(eventLog).to.be.an('object');
+        expect(eventLog.commitmentEvents).to.be.an('array');
+        expect(eventLog.commitmentEvents.length).to.be.at.least(EXPECTED_COMMITMENT_GROUP_EVENTS_POLYGON);
+        expect(eventLog.nullifierEvents.length).to.be.at.least(EXPECTED_NULLIFIER_EVENTS_POLYGON);
+        expect(eventLog.unshieldEvents.length).to.be.at.least(EXPECTED_UNSHIELD_EVENTS_POLYGON);
+        expect(eventLog.unshieldEvents.length).to.be.at.least(EXPECTED_UNSHIELD_EVENTS_POLYGON);
+        const shouldThrow = true;
+        assertContiguousCommitmentEvents(eventLog.commitmentEvents, shouldThrow);
+    }).timeout(200000);
+    it('[V2] Should make sure Graph V2 query has no data gaps in commitments - BNB Smart Chain', async function run() {
+        if (!(0, helper_test_1.isV2Test)()) {
+            this.skip();
+            return;
+        }
+        const eventLog = await (0, quick_sync_events_1.quickSyncEventsGraph)(txidVersion, BNB_CHAIN, 0);
+        expect(eventLog).to.be.an('object');
+        expect(eventLog.commitmentEvents).to.be.an('array');
+        expect(eventLog.commitmentEvents.length).to.be.at.least(EXPECTED_COMMITMENT_GROUP_EVENTS_BNB);
+        expect(eventLog.nullifierEvents.length).to.be.at.least(EXPECTED_NULLIFIER_EVENTS_BNB);
+        expect(eventLog.unshieldEvents.length).to.be.at.least(EXPECTED_UNSHIELD_EVENTS_BNB);
+        const shouldThrow = true;
+        assertContiguousCommitmentEvents(eventLog.commitmentEvents, shouldThrow);
+    }).timeout(200000);
+    it('[V2] Should make sure Graph V2 query has no data gaps in commitments - Arbitrum', async function run() {
+        if (!(0, helper_test_1.isV2Test)()) {
+            this.skip();
+            return;
+        }
+        const eventLog = await (0, quick_sync_events_1.quickSyncEventsGraph)(txidVersion, ARBITRUM_CHAIN, 0);
+        expect(eventLog).to.be.an('object');
+        expect(eventLog.commitmentEvents).to.be.an('array');
+        expect(eventLog.commitmentEvents.length).to.be.at.least(EXPECTED_COMMITMENT_GROUP_EVENTS_ARBITRUM);
+        expect(eventLog.nullifierEvents.length).to.be.at.least(EXPECTED_NULLIFIER_EVENTS_ARBITRUM);
+        expect(eventLog.unshieldEvents.length).to.be.at.least(EXPECTED_UNSHIELD_EVENTS_ARBITRUM);
+        const shouldThrow = true;
+        assertContiguousCommitmentEvents(eventLog.commitmentEvents, shouldThrow);
+    }).timeout(200000);
+    it('[V2] Should make sure Graph V2 query has no data gaps in commitments - Sepolia', async function run() {
+        if (!(0, helper_test_1.isV2Test)()) {
+            this.skip();
+            return;
+        }
+        const eventLog = await (0, quick_sync_events_1.quickSyncEventsGraph)(txidVersion, SEPOLIA_CHAIN, 0);
+        expect(eventLog).to.be.an('object');
+        expect(eventLog.commitmentEvents).to.be.an('array');
+        expect(eventLog.commitmentEvents.length).to.be.at.least(EXPECTED_COMMITMENT_GROUP_EVENTS_SEPOLIA);
+        expect(eventLog.nullifierEvents.length).to.be.at.least(EXPECTED_NULLIFIER_EVENTS_SEPOLIA);
+        expect(eventLog.unshieldEvents.length).to.be.at.least(EXPECTED_UNSHIELD_EVENTS_SEPOLIA);
+        const shouldThrow = true;
+        assertContiguousCommitmentEvents(eventLog.commitmentEvents, shouldThrow);
+    }).timeout(90000);
+    it('[V2] Should run live Railgun Event Log fetch for Polygon with high starting block', async function run() {
+        if (!(0, helper_test_1.isV2Test)()) {
+            this.skip();
+            return;
+        }
+        const eventLog = await (0, quick_sync_events_1.quickSyncEventsGraph)(txidVersion, POLYGON_CHAIN, 100000000);
+        expect(eventLog).to.be.an('object');
+        expect(eventLog.commitmentEvents).to.be.an('array');
+        expect(eventLog.nullifierEvents).to.be.an('array');
+        expect(eventLog.commitmentEvents.length).to.equal(0);
+        expect(eventLog.nullifierEvents.length).to.equal(0);
+        expect(eventLog.unshieldEvents.length).to.equal(0);
+    }).timeout(200000);
+});
+//# sourceMappingURL=quick-sync-events-graph-v2.test.js.map

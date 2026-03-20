@@ -38,9 +38,6 @@ const loadProviderForNetwork = async (chain, networkName, fallbackProviderJsonCo
     if (!proxyContract) {
         throw new Error(`Could not find Proxy contract for network: ${publicName}`);
     }
-    if (!relayAdaptContract) {
-        throw new Error(`Could not find Relay Adapt contract for network: ${publicName}`);
-    }
     const engine = (0, engine_1.getEngine)();
     const deploymentBlocks = {
         [shared_models_1.TXIDVersion.V2_PoseidonMerkle]: deploymentBlock ?? 0,
