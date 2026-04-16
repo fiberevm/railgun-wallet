@@ -35,8 +35,10 @@ const walletForID = (id) => {
 exports.walletForID = walletForID;
 const fullWalletForID = (id) => {
     const wallet = (0, exports.walletForID)(id);
-    if (!(wallet instanceof engine_1.RailgunWallet)) {
-        throw new Error('Can not load View-Only wallet.');
+    // Reject view-only wallets — they cannot sign proofs.
+    // Accept RailgunWallet (mnemonic-based) and DelegatedSignWallet (enclave-backed).
+    if (wallet instanceof engine_1.ViewOnlyWallet) {
+        throw new Error('Cannot use View-Only wallet for signing operations.');
     }
     return wallet;
 };

@@ -59,10 +59,12 @@ export const walletForID = (id: string): AbstractWallet => {
 
 export const fullWalletForID = (id: string): RailgunWallet => {
   const wallet = walletForID(id);
-  if (!(wallet instanceof RailgunWallet)) {
-    throw new Error('Can not load View-Only wallet.');
+  // Reject view-only wallets — they cannot sign proofs.
+  // Accept RailgunWallet (mnemonic-based) and DelegatedSignWallet (enclave-backed).
+  if (wallet instanceof ViewOnlyWallet) {
+    throw new Error('Cannot use View-Only wallet for signing operations.');
   }
-  return wallet;
+  return wallet as RailgunWallet;
 };
 
 export const viewOnlyWalletForID = (id: string): RailgunWallet => {
