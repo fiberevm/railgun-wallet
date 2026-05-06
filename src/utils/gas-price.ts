@@ -14,6 +14,7 @@ export const shouldSetOverallBatchMinGasPriceForNetwork = (
   }
   switch (networkName) {
     case NetworkName.Arbitrum:
+    case NetworkName.Base:
       // L2s should not set overallBatchMinGasPrice.
       return false;
     case NetworkName.Ethereum:

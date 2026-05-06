@@ -77,6 +77,7 @@ const estimateGas = (
 const shouldRemoveGasLimitForL2GasEstimate = (networkName: NetworkName) => {
   switch (networkName) {
     case NetworkName.Arbitrum:
+    case NetworkName.Base:
       return true;
     case NetworkName.Ethereum:
     case NetworkName.BNBChain:
