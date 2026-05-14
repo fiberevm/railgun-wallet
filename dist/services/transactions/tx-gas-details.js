@@ -40,6 +40,7 @@ const estimateGas = (txidVersion, networkName, transaction, isCrossContractCall)
 const shouldRemoveGasLimitForL2GasEstimate = (networkName) => {
     switch (networkName) {
         case shared_models_1.NetworkName.Arbitrum:
+        case shared_models_1.NetworkName.Base:
             return true;
         case shared_models_1.NetworkName.Ethereum:
         case shared_models_1.NetworkName.BNBChain:

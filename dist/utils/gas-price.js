@@ -13,6 +13,7 @@ const shouldSetOverallBatchMinGasPriceForNetwork = (sendWithPublicWallet, networ
     }
     switch (networkName) {
         case shared_models_1.NetworkName.Arbitrum:
+        case shared_models_1.NetworkName.Base:
             // L2s should not set overallBatchMinGasPrice.
             return false;
         case shared_models_1.NetworkName.Ethereum:
